@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -19,27 +20,30 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(name = "name", length = 8)
+    @Column(name = "name", length = 8, nullable = false)
     private String name;
 
     @Email
-    @Column(name = "email", length = 50)
+    @Column(name = "email", length = 50, nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password", length = 255)
+    @Column(name = "password", length = 255, nullable = false)
     private String password;
 
-    @Column(name = "nickname", length = 8)
+    @Column(name = "nickname", length = 8, nullable = false, unique = true)
     private String nickname;
 
-    @Column(name = "gender")
+    @Column(name = "gender", nullable = false)
     private int gender;
 
-    @Column(name = "profile_image", length = 255)
+    @Column(name = "profile_image", length = 255, nullable = true, unique = true)
     private String profileImage;
 
-    @Column(name = "phone", length = 13)
+    @Column(name = "phone", length = 13, nullable = false, unique = true)
     private String phone;
+
+    @Column(name = "address", length = 255, nullable = false)
+    private String address;
 
     @Column(name = "is_active")
     private Boolean isActive;

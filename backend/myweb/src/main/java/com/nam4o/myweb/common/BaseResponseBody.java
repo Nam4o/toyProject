@@ -14,7 +14,7 @@ public class BaseResponseBody<T> {
 
         private String resultCode = "";
 
-        private String resultMessage = "";
+        private Object resultMessage = "";
 
     }
 
@@ -29,7 +29,7 @@ public class BaseResponseBody<T> {
         return body;
     }
 
-    public static BaseResponseBody<Object> error(String resultCode, String resultMessage) {
+    public static BaseResponseBody<Object> error(String resultCode, Object resultMessage) {
         BaseResponseBody<Object> body = new BaseResponseBody<>();
         body.getDataHeader().setSuccessCode(1);
         body.getDataHeader().setResultCode(resultCode);
