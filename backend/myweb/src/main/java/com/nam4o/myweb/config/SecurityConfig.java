@@ -25,15 +25,15 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeHttpRequest -> authorizeHttpRequest
-                        .requestMatchers("/api/user/signup", "/api/user/login").permitAll()
+                        .requestMatchers("/api/member/signup", "/api/member/login").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(formLogin -> formLogin
-                        .loginPage("/api/user/login")
+                        .loginPage("/api/member/login")
                         .defaultSuccessUrl("/"))
                 .logout(logout -> logout
-                        .logoutRequestMatcher(new AntPathRequestMatcher("/api/user/logout"))
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/api/member/logout"))
                         .logoutSuccessUrl("/"));
 
         return http.build();

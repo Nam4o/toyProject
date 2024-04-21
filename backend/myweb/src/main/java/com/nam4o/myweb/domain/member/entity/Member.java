@@ -1,6 +1,7 @@
 package com.nam4o.myweb.domain.member.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.nam4o.myweb.domain.member.repository.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -47,4 +53,12 @@ public class Member {
 
     @Column(name = "is_active")
     private Boolean isActive;
+
+
+    @ManyToMany
+    @JoinTable(
+            name = "member_authorities",
+            joinColumns = {@JoinColumn(name = "member_id", referencedColumnName = "member_id")},
+            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
+    private Set<Authorities> authorities;
 }
