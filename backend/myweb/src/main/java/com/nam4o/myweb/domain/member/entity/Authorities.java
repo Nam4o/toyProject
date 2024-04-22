@@ -14,6 +14,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Authorities {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "authority_id")
+    private Long id;
+
+
     @Column(name = "authority_name")
     private String authorityName;
+
+    @ManyToOne
+    private Member member;
 }

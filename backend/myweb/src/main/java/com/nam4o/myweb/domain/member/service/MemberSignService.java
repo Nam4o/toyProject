@@ -5,6 +5,7 @@ import com.nam4o.myweb.common.exception.Exceptions;
 import com.nam4o.myweb.domain.member.dto.MemberSignupReqDto;
 import com.nam4o.myweb.domain.member.entity.Authorities;
 import com.nam4o.myweb.domain.member.entity.Member;
+import com.nam4o.myweb.domain.member.repository.AuthoritiesRepository;
 import com.nam4o.myweb.domain.member.repository.MemberRepository;
 import com.nam4o.myweb.domain.member.repository.Role;
 import jakarta.validation.ValidationException;
@@ -23,15 +24,13 @@ import java.util.Set;
 public class MemberSignService {
 
     private final MemberRepository memberRepository;
+    private final AuthoritiesRepository authoritiesRepository;
 
     @Transactional
     public Long memberSignup(MemberSignupReqDto request) {
         if(memberRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new Exceptions(ErrorCode.EMAIL_EXIST);
         }
-        Authorities authority = Authorities.builder()
-                .authorityName(Role.USER.getRole().toString())
-                .build();
 
 //        Set<Authorities> auth = new HashSet<>();
 //        auth.add(Role.USER);
@@ -45,10 +44,22 @@ public class MemberSignService {
                 .phone(request.getPhone())
                 .address(request.getAddress())
                 .isActive(true)
-                .authorities(Collections.singleton(authority))
+//                .authorities(Collections.singleton())
                 .build();
 
-        return memberRepository.save(member).getId();
+
+        Long memberId = memberRepository.save(member).getId();
+
+        Authorities authority = Authorities.builder()
+                .member(member)
+                .authorityName(Role.USER.getRole().toString())
+                .build();
+
+        authoritiesRepository.save(authority);
+
+        member.addRole(authority);
+
+        return memberId;
 
     }
 

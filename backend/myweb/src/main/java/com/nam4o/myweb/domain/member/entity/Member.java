@@ -10,10 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -54,11 +51,17 @@ public class Member {
     @Column(name = "is_active")
     private Boolean isActive;
 
-
-    @ManyToMany
-    @JoinTable(
-            name = "member_authorities",
-            joinColumns = {@JoinColumn(name = "member_id", referencedColumnName = "member_id")},
-            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
+    
+    @OneToMany(mappedBy = "member")
     private Set<Authorities> authorities;
+
+    public void addRole(Authorities authority){
+        if(this.authorities == null) {
+            this.authorities = new HashSet<>();
+            this.authorities.add(authority);
+        } else {
+            this.authorities.add(authority);
+        }
+
+    }
 }
