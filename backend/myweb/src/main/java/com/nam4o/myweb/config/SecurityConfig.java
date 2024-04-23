@@ -1,6 +1,11 @@
 package com.nam4o.myweb.config;
 
 
+import com.nam4o.myweb.auth.JwtAuthFilter;
+import com.nam4o.myweb.auth.TokenProvider;
+import com.nam4o.myweb.auth.repository.TokenRepository;
+import com.nam4o.myweb.common.exception.JwtAccessDeniedHandler;
+import com.nam4o.myweb.common.exception.JwtAuthenticationEntryPoint;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.io.IOException;
@@ -23,6 +29,11 @@ import java.io.IOException;
 @AllArgsConstructor
 public class SecurityConfig {
 
+    private final TokenProvider tokenProvider;
+    private final TokenRepository tokenRepository;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -32,17 +43,18 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .addFilterBefore(new JwtAuthFilter(tokenRepository, tokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .accessDeniedHandler(jwtAccessDeniedHandler)
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(authorizeHttpRequest -> authorizeHttpRequest
                         .requestMatchers("/api/member/signup", "/api/member/login").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(sessionManagement -> sessionManagement
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .formLogin(formLogin -> formLogin
-                        .loginPage("/api/member/login")
-                        .defaultSuccessUrl("/"))
-                .logout(logout -> logout
-                        .logoutRequestMatcher(new AntPathRequestMatcher("/api/member/logout"))
-                        .logoutSuccessUrl("/"));
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+//                .formLogin(formLogin -> formLogin
+//                        .loginPage("/api/member/login")
+//                        .defaultSuccessUrl("/"))
 
         return http.build();
     }

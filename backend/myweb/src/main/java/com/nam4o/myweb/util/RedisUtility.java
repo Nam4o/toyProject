@@ -19,13 +19,10 @@ public class RedisUtility {
     private final StringRedisTemplate stringRedisTemplate;
     private final TokenRepository tokenRepository;
 
-    public void repo(String key, String value) {
-        tokenRepository.save(new Token(key, value));
-    }
+//    public void repo(String key, String value) {
+//        tokenRepository.save(new Token(key, value));
+//    }
 
-    public boolean checkBlackList(String key) {
-        return  tokenRepository.findById(key).get().getIsLogout();
-    }
 
     public String getData(String key) {
         ValueOperations<String, String> valueOperations = stringRedisTemplate.opsForValue();

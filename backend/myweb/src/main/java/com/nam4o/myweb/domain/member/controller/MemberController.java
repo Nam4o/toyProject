@@ -2,6 +2,7 @@ package com.nam4o.myweb.domain.member.controller;
 
 import com.nam4o.myweb.common.BaseResponseBody;
 import com.nam4o.myweb.domain.member.dto.MemberLoginReqDto;
+import com.nam4o.myweb.domain.member.dto.MemberLoginResDto;
 import com.nam4o.myweb.domain.member.dto.MemberSignupReqDto;
 import com.nam4o.myweb.domain.member.service.MemberSignService;
 import jakarta.validation.Valid;
@@ -32,8 +33,8 @@ public class MemberController {
 
     @PostMapping("/login")
     public ResponseEntity<? extends BaseResponseBody> login(@RequestBody @Valid MemberLoginReqDto request) throws Exception {
-
-        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(0, "token"));
+//        MemberLoginResDto = memberSignService.memberLogin(request);
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(0, "hi"));
     }
 
 }

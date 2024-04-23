@@ -35,32 +35,32 @@ public class JwtFilter extends GenericFilterBean {
         String accessToken = resolveToken(httpServletRequest, "Authorization");
         String refreshToken = resolveToken(httpServletRequest, "Refresh-Token");
         String requestURI = httpServletRequest.getRequestURI();
-        try {
-            if (isAllowedPath(requestURI)) {
-                filterChain.doFilter(servletRequest, servletResponse);
-                return;
-            }
-            if ("/api/member/token/refresh".equals(requestURI)) {
-                if (refreshToken != null && tokenProvider.validateToken(refreshToken)) {
-                    filterChain.doFilter(servletRequest, servletResponse);
-                } else {
-                    sendUnauthorizedResponse(httpServletResponse, "Refresh Token이 유효하지 않거나 만료되었습니다. 다시 로그인해주세요.");
-                }
-            } else {
-                if (accessToken != null && tokenProvider.validateToken(accessToken)) {
-                    Authentication authentication = tokenProvider.getAuthentication(accessToken);
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                    filterChain.doFilter(servletRequest, servletResponse);
-                } else {
-                    sendUnauthorizedResponse(httpServletResponse, "Access Token이 유효하지 않습니다. 다시 로그인해주세요.");
-                }
-
-            }
-        } catch (Exception e) {
-            SecurityContextHolder.clearContext();
-            logger.error("Authentication error: ", e);
-            sendUnauthorizedResponse(httpServletResponse, "Authentication error: " + e.getMessage());
-        }
+//        try {
+//            if (isAllowedPath(requestURI)) {
+//                filterChain.doFilter(servletRequest, servletResponse);
+//                return;
+//            }
+//            if ("/api/member/token/refresh".equals(requestURI)) {
+//                if (refreshToken != null && tokenProvider.validateToken(refreshToken)) {
+//                    filterChain.doFilter(servletRequest, servletResponse);
+//                } else {
+//                    sendUnauthorizedResponse(httpServletResponse, "Refresh Token이 유효하지 않거나 만료되었습니다. 다시 로그인해주세요.");
+//                }
+//            } else {
+//                if (accessToken != null && tokenProvider.validateToken(accessToken)) {
+//                    Authentication authentication = tokenProvider.getAuthentication(accessToken);
+//                    SecurityContextHolder.getContext().setAuthentication(authentication);
+//                    filterChain.doFilter(servletRequest, servletResponse);
+//                } else {
+//                    sendUnauthorizedResponse(httpServletResponse, "Access Token이 유효하지 않습니다. 다시 로그인해주세요.");
+//                }
+//
+//            }
+//        } catch (Exception e) {
+//            SecurityContextHolder.clearContext();
+//            logger.error("Authentication error: ", e);
+//            sendUnauthorizedResponse(httpServletResponse, "Authentication error: " + e.getMessage());
+//        }
     }
 
     private boolean isAllowedPath(String requestUri) {
