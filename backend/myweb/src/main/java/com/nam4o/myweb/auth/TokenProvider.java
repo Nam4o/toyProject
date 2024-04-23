@@ -42,7 +42,7 @@ public class TokenProvider {
     private final TokenRepository tokenRepository;
     private final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
     private static final String AUTHORITIES_KEY = "auth";
-    private final String secret;
+    private static String secret;
     private final Long tokenValidityInMiliseconds;
     private Key key;
     @Value("${jwt.access.header}")
@@ -85,10 +85,6 @@ public class TokenProvider {
     }
 
     public String createRefreshToken(String email) {
-//        String authorities = authentication.getAuthorities().stream()
-//                .map(GrantedAuthority::getAuthority)
-//                .collect(Collectors.joining(","));
-
         Claims claims = Jwts.claims();
 
         long now = (new Date()).getTime();
@@ -104,8 +100,7 @@ public class TokenProvider {
                 .setExpiration(refreshTokenValidity)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
-//        tokenRepository.save(new Token(authentication.getName(), refreshToken));
-//        redisUtility.setDataExpire(authentication.getName(), refreshToken, refreshTokenValidity.getTime());
+
     }
 
     public Authentication getAuthentication(String accessToken) {
@@ -121,42 +116,6 @@ public class TokenProvider {
         return new UsernamePasswordAuthenticationToken(principal, accessToken, authorities);
     }
 
-//    public boolean validateToken(String accessToken) {
-//        try {
-//            TokenProvider.isExpired(accessToken, secret);
-//
-//            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken);
-//            if(!stringRedisTemplate.hasKey(accessToken)) {
-//                return false;
-//            }
-//            return true;
-//        } catch (SecurityException | MalformedJwtException e) {
-//            log.info("Invalid Jwt Token", e);
-//        } catch (ExpiredJwtException e) {
-//            log.info("Expired Jwt Token", e);
-//            Token foundTokenInfo = tokenRepository.findByAccessToken(accessToken).orElseThrow();
-//            // exception 추가
-//            String refreshToken = foundTokenInfo.getRefreshToken();
-//
-//            TokenProvider.isExpired(refreshToken, secret);
-//
-//            String email = foundTokenInfo.getId();
-//
-//            Member member = memberRepository
-//                    .findByEmail(email).orElseThrow(() -> new Exceptions(ErrorCode.MEMBER_NOT_EXIST));
-//
-//            String newAccessToken = createAccessToken(authenticationManagerBuilder.getObject().authenticate(getAuthentication(accessToken)));
-//
-//            updateTokenRepo(email, refreshToken, newAccessToken);
-//
-//        } catch (UnsupportedJwtException e) {
-//            log.info("Unsupported Jwt Token", e);
-//        } catch (IllegalArgumentException e) {
-//            log.info("Jwt claims string is empty", e);
-//        }
-//
-//        return false;
-//    }
     public void updateTokenRepo(String email, String refreshToken, String accessToken) {
         tokenRepository.save(new Token(email, refreshToken, accessToken));
     }
@@ -193,8 +152,8 @@ public class TokenProvider {
         }
     }
 
-    public static boolean isExpired(String token, String secretKey) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token)
+    public static boolean isExpired(String token) {
+        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token)
                 .getBody().getExpiration().before(new Date());
     }
 

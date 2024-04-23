@@ -14,9 +14,14 @@ import com.nam4o.myweb.domain.member.repository.Role;
 import jakarta.validation.ValidationException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,15 +29,19 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+@Slf4j
 @Service
 @Getter
 @RequiredArgsConstructor
 public class MemberSignService {
+    private final Logger logger = LoggerFactory.getLogger(MemberSignService.class);
 
     private final MemberRepository memberRepository;
     private final AuthoritiesRepository authoritiesRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private  final TokenProvider tokenProvider;
+    private final TokenProvider tokenProvider;
+    private final PasswordEncoder passwordEncoder;
+
     @Transactional
     public Long memberSignup(MemberSignupReqDto request) {
         if(memberRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -45,7 +54,7 @@ public class MemberSignService {
         Member member = Member.builder()
                 .name(request.getName())
                 .email(request.getEmail())
-                .password(request.getPassword())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .nickname(request.getNickname())
                 .gender(request.getGender())
                 .phone(request.getPhone())
@@ -70,17 +79,24 @@ public class MemberSignService {
     }
 
     public MemberLoginResDto memberLogin(MemberLoginReqDto request) {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(request.getEmail(), "");
-        Member member = memberRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new Exceptions(ErrorCode.MEMBER_NOT_EXIST));
+        try {
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
+            Member member = memberRepository.findByEmail(request.getEmail())
+                    .orElseThrow(() -> new Exceptions(ErrorCode.MEMBER_NOT_EXIST));
+            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+            String accessToken = tokenProvider.createAccessToken(authentication);
+            String refreshToken = tokenProvider.createRefreshToken(accessToken);
 
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        String accessToken = tokenProvider.createAccessToken(authentication);
+            tokenProvider.updateTokenRepo(request.getEmail(), refreshToken, accessToken);
+            return MemberLoginResDto.builder()
+                    .grantType("Bearer")
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .build();
+        } catch (AuthorizationServiceException e) {
+            log.info("auth error", e);
+            return null;
+        }
 
-        return MemberLoginResDto.builder()
-                .grantType("Bearer")
-                .accessToken(accessToken)
-                .refreshToken(tokenProvider.createRefreshToken(accessToken))
-                .build();
     }
 }

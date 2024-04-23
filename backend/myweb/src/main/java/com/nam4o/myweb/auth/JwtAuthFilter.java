@@ -3,6 +3,7 @@ package com.nam4o.myweb.auth;
 import com.nam4o.myweb.auth.repository.TokenRepository;
 import com.nam4o.myweb.common.exception.ErrorCode;
 import com.nam4o.myweb.common.exception.Exceptions;
+import com.nam4o.myweb.common.exception.JwtAuthenticationEntryPoint;
 import com.nam4o.myweb.domain.member.entity.Member;
 import com.nam4o.myweb.domain.member.repository.MemberRepository;
 import jakarta.servlet.FilterChain;
@@ -49,17 +50,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String refreshToken = tokenProvider.extractRefreshToken(request)
                     .filter(tokenProvider::isTokenValid)
                     .orElse(null);
-
-            if (tokenProvider.isExpired(accessToken, secret)) {
+            if (tokenProvider.isExpired(accessToken)) {
                 checkRefreshTokenAndReIssueAccessToken(response, refreshToken, tokenProvider.getAuthentication(accessToken));
-                //            String email = tokenRepository.findByAccessToken(accessToken).orElseThrow(() -> new Exceptions(ErrorCode.NOT_VALID_REQUEST)).getId();
-                //            Authentication authentication = tokenProvider.getAuthentication(accessToken);
-                //            String newAccessToken = tokenProvider.createAccessToken(authentication);
-                //            String newRefreshToken = tokenProvider.createRefreshToken(authentication);
-                //
-                //            tokenProvider.updateTokenRepo(email, newRefreshToken, newAccessToken);
-                //            SecurityContextHolder.getContext().setAuthentication(authentication);
-                //            filterChain.doFilter(request, response);
+            }
+            if(tokenRepository.findByAccessToken(accessToken).isEmpty()) {
+                sendUnauthorizedResponse(response, "AccessToken is Invalid");
+                return;
             }
             if (accessToken != null && tokenProvider.isTokenValid(accessToken)) {
                 Authentication authentication = tokenProvider.getAuthentication(accessToken);
@@ -83,7 +79,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 
     public void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response, String refreshToken, Authentication authentication) {
-//        String email = tokenRepository.findByRefreshToken(refreshToken).orElseThrow(() -> new Exceptions(ErrorCode.NOT_VALID_REQUEST)).getId();
         tokenRepository.findByRefreshToken(refreshToken)
                         .ifPresent(token -> {
                             String newRefreshToken = updateRefreshToken(token.getAccessToken());

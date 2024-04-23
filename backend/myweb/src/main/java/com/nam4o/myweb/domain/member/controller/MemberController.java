@@ -33,8 +33,8 @@ public class MemberController {
 
     @PostMapping("/login")
     public ResponseEntity<? extends BaseResponseBody> login(@RequestBody @Valid MemberLoginReqDto request) throws Exception {
-//        MemberLoginResDto = memberSignService.memberLogin(request);
-        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(0, "hi"));
+        MemberLoginResDto response = memberSignService.memberLogin(request);
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(0, response));
     }
 
 }
