@@ -6,6 +6,7 @@ import com.nam4o.myweb.auth.TokenProvider;
 import com.nam4o.myweb.auth.repository.TokenRepository;
 import com.nam4o.myweb.common.exception.JwtAccessDeniedHandler;
 import com.nam4o.myweb.common.exception.JwtAuthenticationEntryPoint;
+import com.nam4o.myweb.domain.member.repository.MemberRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +29,7 @@ import java.io.IOException;
 @EnableMethodSecurity
 @AllArgsConstructor
 public class SecurityConfig {
-
+    private final MemberRepository memberRepository;
     private final TokenProvider tokenProvider;
     private final TokenRepository tokenRepository;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -43,7 +44,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .addFilterBefore(new JwtAuthFilter(tokenRepository, tokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthFilter(memberRepository, tokenRepository, tokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint))

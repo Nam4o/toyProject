@@ -6,6 +6,8 @@ import com.nam4o.myweb.common.exception.Exceptions;
 import com.nam4o.myweb.common.exception.JwtAuthenticationEntryPoint;
 import com.nam4o.myweb.domain.member.entity.Member;
 import com.nam4o.myweb.domain.member.repository.MemberRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +30,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
-
+    private final MemberRepository memberRepository;
     private final TokenRepository tokenRepository;
     private final TokenProvider tokenProvider;
     @Value("${jwt.secret}")
@@ -46,13 +48,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 return;
             }
             String accessToken = tokenProvider.extractAccessToken(request).orElse(null);
-
+            System.out.println("============================");
+            System.out.println(accessToken);
+            System.out.println("============================");
             String refreshToken = tokenProvider.extractRefreshToken(request)
-                    .filter(tokenProvider::isTokenValid)
+//                    .filter(tokenProvider::isTokenValid)
                     .orElse(null);
-            if (tokenProvider.isExpired(accessToken)) {
-                checkRefreshTokenAndReIssueAccessToken(response, refreshToken, tokenProvider.getAuthentication(accessToken));
-            }
+            System.out.println("============================");
+            System.out.println(refreshToken);
+            System.out.println("============================");
+            System.out.println(TokenProvider.isExpired(accessToken));
+//            if (TokenProvider.isExpired(accessToken)) {
+//                System.out.println("1");
+//                checkRefreshTokenAndReIssueAccessToken(response, refreshToken, tokenProvider.getAuthentication(accessToken));
+//                System.out.println("2");
+//            }
+
             if(tokenRepository.findByAccessToken(accessToken).isEmpty()) {
                 sendUnauthorizedResponse(response, "AccessToken is Invalid");
                 return;
@@ -63,11 +74,31 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
             }
 
-        } catch (Exception e) {
-            SecurityContextHolder.clearContext();
-            logger.error("Authentication error: ", e);
-            sendUnauthorizedResponse(response, "Authentication error: " + e.getMessage());
+        } catch (ExpiredJwtException e) {
+            Claims claims = e.getClaims();
+
+            Member member = memberRepository.findByEmail(claims.getSubject())
+                    .orElseThrow(() -> new Exceptions(ErrorCode.MEMBER_NOT_EXIST));
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(member.getEmail(),member.getPassword());
+
+//            String accessToken = tokenProvider.extractAccessToken(request).orElse(null);
+            String newAccessToken = tokenProvider
+                    .createAccessToken(tokenProvider.getAuthentication(tokenProvider.extractAccessToken(request).orElse(null)));
+
+            String refreshToken = tokenProvider.extractRefreshToken(request)
+                    .filter(tokenProvider::isTokenValid)
+                    .orElse(null);
+            System.out.println(newAccessToken);
+            System.out.println(refreshToken);
+
+            checkRefreshTokenAndReIssueAccessToken(response, refreshToken, newAccessToken);
+            System.out.println(TokenProvider.isExpired(newAccessToken));
         }
+//        catch (Exception e) {
+//            SecurityContextHolder.clearContext();
+//            logger.error("Authentication error: ", e);
+//            sendUnauthorizedResponse(response, "Authentication error: " + e.getMessage());
+//        }
     }
 
 
@@ -78,12 +109,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
 
-    public void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response, String refreshToken, Authentication authentication) {
+    public void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response, String refreshToken, String newAccessToken) {
         tokenRepository.findByRefreshToken(refreshToken)
                         .ifPresent(token -> {
                             String newRefreshToken = updateRefreshToken(token.getAccessToken());
-                            tokenProvider.updateTokenRepo(token.getId(), newRefreshToken, tokenProvider.createAccessToken(authentication));
+//                            tokenProvider.updateTokenRepo(token.getId(), newRefreshToken, tokenProvider.createAccessToken(authentication)
+                            tokenProvider.updateTokenRepo(token.getId(), newRefreshToken, newAccessToken);
+                            response.setHeader("Authorization", "Bearer " + newAccessToken);
+                            response.setHeader("Refresh-Token", "Bearer " + newRefreshToken);
                         });
+
     }
 
 
