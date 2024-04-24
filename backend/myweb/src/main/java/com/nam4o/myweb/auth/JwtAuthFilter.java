@@ -35,7 +35,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final TokenProvider tokenProvider;
     @Value("${jwt.secret}")
     private String secret;
-
+    @Value("${jwt.access.header}")
+    private String accessHeader;
+    @Value("${jwt.refresh.header}")
+    private String refreshHeader;
     private GrantedAuthoritiesMapper grantedAuthoritiesMapper = new NullAuthoritiesMapper();
 
     @Override
@@ -92,6 +95,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             System.out.println(refreshToken);
 
             checkRefreshTokenAndReIssueAccessToken(response, refreshToken, newAccessToken);
+            response.setHeader(accessHeader, newAccessToken);
             System.out.println(TokenProvider.isExpired(newAccessToken));
         }
 //        catch (Exception e) {
@@ -104,7 +108,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 
     private boolean isAllowedPath(String requestUri) {
-        List<String> allowedPaths = Arrays.asList("/api/member/login", "/api/member/signup", "/swagger-ui/", "/v3/");
+        List<String> allowedPaths = Arrays.asList("/api/member/login", "/api/member/signup", "/swagger-ui/", "/v3/", "/api/refresh");
         return allowedPaths.stream().anyMatch(path -> requestUri.startsWith(path));
     }
 
@@ -113,10 +117,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         tokenRepository.findByRefreshToken(refreshToken)
                         .ifPresent(token -> {
                             String newRefreshToken = updateRefreshToken(token.getAccessToken());
-//                            tokenProvider.updateTokenRepo(token.getId(), newRefreshToken, tokenProvider.createAccessToken(authentication)
+//                            tokenProvider.updateTokenRepo(token.getId(), newR efreshToken, tokenProvider.createAccessToken(authentication)
+                            System.out.println("save new Token to TokenRepository ( Redis )");
                             tokenProvider.updateTokenRepo(token.getId(), newRefreshToken, newAccessToken);
-                            response.setHeader("Authorization", "Bearer " + newAccessToken);
-                            response.setHeader("Refresh-Token", "Bearer " + newRefreshToken);
+                            System.out.println(tokenRepository.findById(token.getId()));
+                            response.setHeader(accessHeader, newAccessToken);
+                            response.setHeader(refreshHeader, newRefreshToken);
                         });
 
     }

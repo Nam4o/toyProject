@@ -11,12 +11,15 @@ import com.nam4o.myweb.domain.member.entity.Member;
 import com.nam4o.myweb.domain.member.repository.AuthoritiesRepository;
 import com.nam4o.myweb.domain.member.repository.MemberRepository;
 import com.nam4o.myweb.domain.member.repository.Role;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ValidationException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -41,6 +44,11 @@ public class MemberSignService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final TokenProvider tokenProvider;
     private final PasswordEncoder passwordEncoder;
+    private final HttpServletResponse response;
+    @Value("${jwt.access.header}")
+    private String accessHeader;
+    @Value("${jwt.refresh.header}")
+    private String refreshHeader;
 
     @Transactional
     public Long memberSignup(MemberSignupReqDto request) {
@@ -88,6 +96,8 @@ public class MemberSignService {
             String refreshToken = tokenProvider.createRefreshToken(accessToken);
 
             tokenProvider.updateTokenRepo(request.getEmail(), refreshToken, accessToken);
+            response.setHeader(accessHeader, "Bearer " + accessToken);
+            response.setHeader(refreshHeader, "Bearer " + refreshToken);
             return MemberLoginResDto.builder()
                     .grantType("Bearer")
                     .accessToken(accessToken)
@@ -99,4 +109,6 @@ public class MemberSignService {
         }
 
     }
+
+
 }
