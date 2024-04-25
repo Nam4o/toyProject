@@ -1,5 +1,6 @@
 package com.nam4o.myweb.auth;
 
+import com.nam4o.myweb.auth.dto.TokenResDto;
 import com.nam4o.myweb.auth.repository.TokenRepository;
 import com.nam4o.myweb.common.exception.ErrorCode;
 import com.nam4o.myweb.common.exception.Exceptions;
@@ -78,31 +79,39 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
 
         } catch (ExpiredJwtException e) {
-            Claims claims = e.getClaims();
-
-            Member member = memberRepository.findByEmail(claims.getSubject())
-                    .orElseThrow(() -> new Exceptions(ErrorCode.MEMBER_NOT_EXIST));
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(member.getEmail(),member.getPassword());
-
-//            String accessToken = tokenProvider.extractAccessToken(request).orElse(null);
-            String newAccessToken = tokenProvider
-                    .createAccessToken(tokenProvider.getAuthentication(tokenProvider.extractAccessToken(request).orElse(null)));
-
-            String refreshToken = tokenProvider.extractRefreshToken(request)
-                    .filter(tokenProvider::isTokenValid)
-                    .orElse(null);
-            System.out.println(newAccessToken);
-            System.out.println(refreshToken);
-
-            checkRefreshTokenAndReIssueAccessToken(response, refreshToken, newAccessToken);
-            response.setHeader(accessHeader, newAccessToken);
-            System.out.println(TokenProvider.isExpired(newAccessToken));
-        }
-//        catch (Exception e) {
-//            SecurityContextHolder.clearContext();
-//            logger.error("Authentication error: ", e);
+            // 해당부분 TokenProvide , AuthController 로 옮긴 후, 프론트에서 error 401 interceptor 해서 재발급
+//            Claims claims = e.getClaims();
+//
+//            Member member = memberRepository.findByEmail(claims.getSubject())
+//                    .orElseThrow(() -> new Exceptions(ErrorCode.MEMBER_NOT_EXIST));
+//            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(member.getEmail(),member.getPassword());
+//
+////            String accessToken = tokenProvider.extractAccessToken(request).orElse(null);
+//            String newAccessToken = tokenProvider
+//                    .createAccessToken(tokenProvider.getAuthentication(tokenProvider.extractAccessToken(request).orElse(null)));
+//
+//            String refreshToken = tokenProvider.extractRefreshToken(request)
+//                    .filter(tokenProvider::isTokenValid)
+//                    .orElse(null);
+//            System.out.println(newAccessToken);
+//            System.out.println(refreshToken);
+//
+//            checkRefreshTokenAndReIssueAccessToken(response, refreshToken, newAccessToken);
+//            response.setHeader(accessHeader, newAccessToken);
+////            System.out.println(TokenProvider.isExpired(newAccessToken));
+////            System.out.println(tokenRepository.findById(member.getEmail()).get().getAccessToken().equals(newAccessToken));
+////            String accessToken = tokenProvider.extractAccessToken(request).orElse(null);
+////            System.out.println(tokenProvider.extractSubject(accessToken));
+//            String newRefreshToken = tokenRepository.findByAccessToken(newAccessToken).get().getRefreshToken();
+//            sendUnauthorizedResponse(response, newAccessToken + " " + newRefreshToken);
 //            sendUnauthorizedResponse(response, "Authentication error: " + e.getMessage());
-//        }
+            sendUnauthorizedResponse(response, "401");
+        }
+        catch (Exception e) {
+            SecurityContextHolder.clearContext();
+            logger.error("Authentication error: ", e);
+            sendUnauthorizedResponse(response, "Authentication error: " + e.getMessage());
+        }
     }
 
 

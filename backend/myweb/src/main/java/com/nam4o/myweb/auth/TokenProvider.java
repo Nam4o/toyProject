@@ -1,5 +1,6 @@
 package com.nam4o.myweb.auth;
 
+import com.nam4o.myweb.auth.dto.TokenResDto;
 import com.nam4o.myweb.auth.entity.Token;
 import com.nam4o.myweb.auth.repository.TokenRepository;
 import com.nam4o.myweb.common.exception.ErrorCode;
@@ -13,6 +14,7 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +35,7 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Getter
 @Slf4j
 @Component
 public class TokenProvider {
@@ -168,4 +171,27 @@ public class TokenProvider {
         }
     }
 
+
+
+
+    public void checkRefreshTokenAndReIssueAccessToken(HttpServletRequest request, HttpServletResponse response, String refreshToken) {
+        String newAccessToken = createAccessToken(getAuthentication(extractAccessToken(request).orElse(null)));
+        tokenRepository.findByRefreshToken(refreshToken)
+                .ifPresent(token -> {
+                    String newRefreshToken = updateRefreshToken(token.getAccessToken());
+//                            tokenProvider.updateTokenRepo(token.getId(), newR efreshToken, tokenProvider.createAccessToken(authentication)
+                    System.out.println("save new Token to TokenRepository ( Redis )");
+                    updateTokenRepo(token.getId(), newRefreshToken, newAccessToken);
+                    System.out.println(tokenRepository.findById(token.getId()));
+                    response.setHeader(accessHeader, newAccessToken);
+                    response.setHeader(refreshHeader, newRefreshToken);
+                });
+    }
+
+
+    private String updateRefreshToken(String accessToken) {
+        String newRefreshToken = createRefreshToken(extractSubject(accessToken));
+        updateTokenRepo(extractSubject(accessToken), newRefreshToken, accessToken);
+        return newRefreshToken;
+    }
 }
