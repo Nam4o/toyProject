@@ -178,7 +178,7 @@ public class TokenProvider {
         String newAccessToken = createAccessToken(getAuthentication(extractAccessToken(request).orElse(null)));
         tokenRepository.findByRefreshToken(refreshToken)
                 .ifPresent(token -> {
-                    String newRefreshToken = updateRefreshToken(token.getAccessToken());
+                    String newRefreshToken = updateRefreshToken(newAccessToken);
 //                            tokenProvider.updateTokenRepo(token.getId(), newR efreshToken, tokenProvider.createAccessToken(authentication)
                     System.out.println("save new Token to TokenRepository ( Redis )");
                     updateTokenRepo(token.getId(), newRefreshToken, newAccessToken);

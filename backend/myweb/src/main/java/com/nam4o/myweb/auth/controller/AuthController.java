@@ -14,10 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Getter
 @RestController
@@ -31,20 +28,22 @@ public class AuthController {
     private String refreshHeader;
     private final TokenProvider tokenProvider;
     private final TokenRepository tokenRepository;
+    private final HttpServletRequest request;
+    private final HttpServletResponse response;
 
-    @PostMapping("/refresh")
-    public ResponseEntity<? extends BaseResponseBody> regenerateAccessToken(@RequestBody HttpServletRequest request,
-                                                                            HttpServletResponse response,
-                                                                            String refreshToken) {
-
-        Token token = tokenRepository.findByRefreshToken(refreshToken).orElse(null);
+    @GetMapping("/refresh")
+    public ResponseEntity<? extends BaseResponseBody> regenerateAccessToken() {
+        System.out.println(request.getHeader(refreshHeader));
+        Token token = tokenRepository.findByRefreshToken(request.getHeader(refreshHeader)).orElse(null);
+        System.out.println(token.getRefreshToken());
         System.out.println("1");
         if(token != null) {
-            tokenProvider.checkRefreshTokenAndReIssueAccessToken(request, response, refreshToken);
+            System.out.println("checkpoint");
+            tokenProvider.checkRefreshTokenAndReIssueAccessToken(request, response, request.getHeader(refreshHeader));
             TokenResDto tokenResDto = TokenResDto.builder()
                     .grantType("Bearer")
-                    .accessToken(token.getAccessToken())
-                    .refreshToken(token.getRefreshToken())
+                    .accessToken(tokenRepository.findById(token.getId()).get().getAccessToken())
+                    .refreshToken(tokenRepository.findById(token.getId()).get().getRefreshToken())
                     .build();
             return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of(0, tokenResDto));
         }
