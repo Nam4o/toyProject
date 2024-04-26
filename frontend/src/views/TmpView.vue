@@ -1,7 +1,7 @@
 <template>
     <div>
         <h1>메인페이지</h1>
-        <p>토큰 확인</p>
+        <p>토큰 확인2</p>
     </div>
 </template>
 
@@ -41,8 +41,8 @@ instance({
         .then((response) => {
         // store.logIn(payload);
         // router.push({ name: "login" });
-        console.log(response.data)
-        console.log("check")
+        console.log(response.data + "2")
+        console.log("check2")
         })
         .catch((error) => {
         // const idx = error.response.data.indexOf(" ")

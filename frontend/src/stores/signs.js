@@ -2,6 +2,7 @@ import { ref, computed, onUpdated, onMounted } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import axios from "axios";
+import instance from '@/utils/axiosInstance.js';
 
 export const useSignStore = defineStore(
     "sign",
@@ -18,7 +19,7 @@ export const useSignStore = defineStore(
       const user = ref(null);
   
       const saveInfo = () => {
-        axios({
+        instance({
           method: "get",
           url: `${API_URL}/member/signup`,
           headers: {
@@ -49,11 +50,14 @@ export const useSignStore = defineStore(
           .then((response) => {
             accessToken.value = "Bearer " + response.data.dataBody.accessToken;
             refreshToken.value = "Bearer " + response.data.dataBody.refreshToken;
+            localStorage.setItem('accessToken', response.data.dataBody.accessToken);
+            localStorage.setItem('refreshToken', response.data.dataBody.refreshToken);
+            
             console.log(response.data);
             // saveInfo();
-  
+            
             window.alert(`환영합니다. ${email.value} 님!`);
-            router.push({ name: "main" });
+            // router.push({ name: "main" });
           })
           .catch((error) => {
             window.alert("잘못 된 접근 방식입니다.");

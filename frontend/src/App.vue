@@ -6,6 +6,8 @@
     <RouterLink :to="{ name: 'login'}">로그인</RouterLink>
     <br>
     <RouterLink :to="{ name: 'main'}">토큰확인</RouterLink>
+    <br>
+    <RouterLink :to="{ name: 'main2'}">토큰확인2</RouterLink>
     <RouterView />
       
   </div>
@@ -14,6 +16,7 @@
 <script setup>
 import { RouterLink, RouterView } from "vue-router";
 import { useRouter } from "vue-router";
+
 </script>
 
 <style lang="scss" scoped>
