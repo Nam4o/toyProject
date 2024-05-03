@@ -1,7 +1,5 @@
 <template>
-    <h1>회원가입</h1>
-    <SignupComponent></SignupComponent>
-    <!-- <div>
+    <div>
         <form @submit.prevent="signUp" class="signup-form">
       <div class="info-list">
         <label for="name">이름 : </label>
@@ -115,7 +113,7 @@
 
 
 
-    </div> -->
+    </div>
 </template>
 
 <script setup>
@@ -123,8 +121,6 @@ import axios from "axios";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useSignStore } from "@/stores/signs";
-
-import SignupComponent from "@/components/SignupComponent.vue";
 
 const router = useRouter();
 const store = useSignStore();
@@ -173,9 +169,72 @@ const signUp = () => {
         console.log(error);
         });
 }
-
 </script>
 
 <style lang="scss" scoped>
+* {
+  font-family: "IBM Plex Sans KR", sans-serif;
+  font-family: "Orbit", sans-serif;
+}
+h1 {
+  padding-bottom: 20px;
+  margin-bottom: 30px;
+  border-bottom: 5px rgba(13, 172, 220, 0.7) solid;
+}
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  font-weight: bolder;
+  font-size: 20px;
+}
+.signup-form div {
+  margin: 10px 0px;
+}
+
+.signup-form label {
+  width: 150px;
+}
+.signup-form input {
+  width: 300px;
+  border-top: 0px;
+  border-right: 0px;
+  border-left: 0px;
+  border-bottom: lightgray solid 1px;
+  font-size: 20px;
+  font-weight: bolder;
+}
+
+.signup-form input {
+  width: 300px;
+  border-top: 0px;
+  border-right: 0px;
+  border-left: 0px;
+  border-bottom-left-radius: 0%;
+  border-bottom-right-radius: 0%;
+  border-bottom: lightgray solid 1px;
+  border-color: rgb(119, 185, 252);
+  font-size: 20px;
+  font-weight: bolder;
+}
+
+.info-list {
+  display: flex;
+}
+
+.required::placeholder {
+  color: crimson;
+}
+
+#btn {
+  border: 1px solid rgba(119, 185, 252, 0.1);
+  background-color: rgba(119, 185, 252, 0.6);
+  color: rgb(60, 60, 60);
+  font-size: 17px;
+  font-weight: bolder;
+  margin-top: 15px;
+  width: 450px;
+  height: 50px;
+}
+
 
 </style>

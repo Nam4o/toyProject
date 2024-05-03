@@ -44,8 +44,8 @@ instance.interceptors.response.use(
             url: `${instance.defaults.baseURL}${REFRESH_URL}`,
             method: 'GET',
             headers: {
-              RefreshToken: refreshToken,
-              Authorization: accessToken
+              RefreshToken: "Bearer " + refreshToken,
+              Authorization: "Bearer " + accessToken
             },
             data: {
               refreshToken: refreshToken
@@ -54,8 +54,11 @@ instance.interceptors.response.use(
           // .post(`${instance.defaults.baseURL}${REFRESH_URL}`, {
           //   refreshToken: refreshToken
           // });
-          const newAccessToken = response.data.accessToken;
-          const newRefreshToken = response.data.refreshToken;
+          console.log("==================")
+          console.log(response.data)
+          console.log("==================")
+          const newAccessToken = response.data.dataBody.accessToken;
+          const newRefreshToken = response.data.dataBody.refreshToken;
 
           localStorage.setItem("accessToken", newAccessToken);
           localStorage.setItem("refreshToken", newRefreshToken);
