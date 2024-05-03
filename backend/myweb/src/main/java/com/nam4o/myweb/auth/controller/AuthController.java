@@ -33,13 +33,13 @@ public class AuthController {
 
     @GetMapping("/refresh")
     public ResponseEntity<? extends BaseResponseBody> regenerateAccessToken() {
-        System.out.println(request.getHeader(refreshHeader));
-        Token token = tokenRepository.findByRefreshToken(request.getHeader(refreshHeader)).orElse(null);
+        System.out.println(request.getHeader(refreshHeader).substring(7));
+        Token token = tokenRepository.findByRefreshToken(request.getHeader(refreshHeader).substring(7)).orElse(null);
         System.out.println(token.getRefreshToken());
         System.out.println("1");
         if(token != null) {
             System.out.println("checkpoint");
-            tokenProvider.checkRefreshTokenAndReIssueAccessToken(request, response, request.getHeader(refreshHeader));
+            tokenProvider.checkRefreshTokenAndReIssueAccessToken(request, response, request.getHeader(refreshHeader).substring(7));
             TokenResDto tokenResDto = TokenResDto.builder()
                     .grantType("Bearer")
                     .accessToken(tokenRepository.findById(token.getId()).get().getAccessToken())

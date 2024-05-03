@@ -121,7 +121,13 @@ public class TokenProvider {
     }
 
     public void updateTokenRepo(String email, String refreshToken, String accessToken) {
-        tokenRepository.save(new Token(email, refreshToken, accessToken));
+//        Token token = tokenRepository.findById(email).orElse(null);
+        Token updatedToken = Token.builder()
+                .id(email)
+                .refreshToken(refreshToken)
+                .accessToken(accessToken)
+                .build();
+        tokenRepository.save(updatedToken);
     }
 
     public Optional<String> extractAccessToken(HttpServletRequest request) {
