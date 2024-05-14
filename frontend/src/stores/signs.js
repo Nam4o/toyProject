@@ -75,36 +75,37 @@ export const useSignStore = defineStore(
         }
       });
   
-    //   const logout = () => {
-    //     axios({
-    //       method: "post",
-    //       url: `${API_URL}/dj-rest-auth/logout/`,
-    //       data: {
-    //         username: username.value,
-    //         password: password.value,
-    //       },
-    //       headers: {
-    //         Authorization: `Token ${token.value}`,
-    //       },
-    //     })
-    //       .then((response) => {
-    //         alert("로그아웃 되었습니다!");
-    //         localStorage.removeItem("sign");
-    //         // 로그아웃 시 로컬스토리지를 비우고 새로고침하여 사용자 인증상태 갱신
-    //         router.go(0);
-    //         router.push({ name: "main" });
-    //       })
-    //       .catch((error) => {
-    //         console.log(error);
-    //       });
-    //   };
+      const logout = () => {
+        instance({
+          method: "post",
+          url: `${API_URL}/member/logout/`,
+          data: {
+            // username: username.value,
+            // password: password.value,
+          },
+          // headers: {
+          //   // Authorization: `Token ${token.value}`,
+          // },
+        })
+          .then((response) => {
+            alert("로그아웃 되었습니다!");
+            localStorage.removeItem("Authorization");
+            localStorage.removeItem("RefreshToken");
+            // 로그아웃 시 로컬스토리지를 비우고 새로고침하여 사용자 인증상태 갱신
+            // router.go(0);
+            // router.push({ name: "main" });
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      };
   
       return {
         accessToken,
         refreshToken,
         logIn,
         isLogin,
-        // logout,
+        logout,
         name,
         password,
         API_URL,
