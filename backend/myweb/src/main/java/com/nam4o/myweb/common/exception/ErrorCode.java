@@ -8,6 +8,7 @@ public enum ErrorCode {
     // 회원
     MEMBER_NOT_EXIST(HttpStatus.BAD_REQUEST, "M-001", "존재하지 않는 회원입니다."),
     EMAIL_EXIST(HttpStatus.BAD_REQUEST, "M-002", "이미 존재하는 이메일입니다."),
+    NiCKNAME_EXIST(HttpStatus.BAD_REQUEST, "M-003", "이미 존재하는 닉네임입니다."),
 
     // Validation
     NOT_VALID_REQUEST(HttpStatus.BAD_REQUEST, "I-001", "요청변수가 유효하지 않습니다.");

@@ -1,5 +1,8 @@
 package com.nam4o.myweb.domain.member.service;
 
+import com.nam4o.myweb.auth.entity.Token;
+import com.nam4o.myweb.auth.repository.TokenRepository;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import com.nam4o.myweb.auth.TokenProvider;
 import com.nam4o.myweb.common.exception.ErrorCode;
 import com.nam4o.myweb.common.exception.Exceptions;
@@ -24,10 +27,13 @@ import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -39,6 +45,8 @@ import java.util.Set;
 public class MemberSignService {
     private final Logger logger = LoggerFactory.getLogger(MemberSignService.class);
 
+    private final TokenRepository tokenRepository;
+    private final StringRedisTemplate stringRedisTemplate;
     private final MemberRepository memberRepository;
     private final AuthoritiesRepository authoritiesRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -49,15 +57,15 @@ public class MemberSignService {
     private String accessHeader;
     @Value("${jwt.refresh.header}")
     private String refreshHeader;
+    private final String NICKNAME = "nickname";
+    private final int LIMIT_TIME = 3 * 60;
+
 
     @Transactional
     public Long memberSignup(MemberSignupReqDto request) {
         if(memberRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new Exceptions(ErrorCode.EMAIL_EXIST);
         }
-
-//        Set<Authorities> auth = new HashSet<>();
-//        auth.add(Role.USER);
 
         Member member = Member.builder()
                 .name(request.getName())
@@ -107,8 +115,33 @@ public class MemberSignService {
             log.info("auth error", e);
             return null;
         }
-
     }
+
+    public void memberLogout() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = userDetails.getUsername();
+        System.out.println(email);
+        tokenRepository.deleteById(email);
+        log.info("회원 로그아웃");
+    }
+
+
+    // checkNickname, true -> 중복x / false -> 중복o
+    public Boolean checkNickname(String nickname, String email){
+        if(memberRepository.findByNickname(nickname).isPresent()) {
+            return false;
+        }
+        if(stringRedisTemplate.hasKey(nickname) != null) {
+            return false;
+        }
+        stringRedisTemplate.opsForValue().set(NICKNAME + nickname, email, Duration.ofSeconds(LIMIT_TIME));
+        return true;
+    }
+
+    public void saveNicknameInRedis(String nickname, String email) {
+        stringRedisTemplate.opsForValue().set(NICKNAME + nickname, email, Duration.ofSeconds(LIMIT_TIME));
+    }
+
 
 
 }
