@@ -8,6 +8,9 @@
     <RouterLink :to="{ name: 'main'}">토큰확인</RouterLink>
     <br>
     <RouterLink :to="{ name: 'main2'}">토큰확인2</RouterLink>
+    <br>
+    <RouterLink :to="{ name: 'profile'}">프로필</RouterLink>
+    <br>
     <button @click=logout>로그아웃</button>
     <RouterView />
       
@@ -33,13 +36,6 @@ const logout = () => {
         instance({
           method: "post",
           url: `${API_URL}/member/logout`,
-          // data: {
-          //   // username: username.value,
-          //   // password: password.value,
-          // },
-          // headers: {
-          //   // Authorization: `Token ${token.value}`,
-          // },
         })
           .then((response) => {
             alert("로그아웃 되었습니다!");

@@ -4,6 +4,7 @@ import SignupView from '../views/SignupView.vue'
 import LoginView from '../views/LoginView.vue'
 import MainView from '../views/MainView.vue'
 import TmpView from '../views/TmpView.vue'
+import ProfileView from '../views/ProfileView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,6 +28,11 @@ const router = createRouter({
       path:'/main2',
       name:'main2',
       component: TmpView
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: ProfileView
     },
     {
       path: '/',

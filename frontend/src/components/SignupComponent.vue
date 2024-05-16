@@ -65,6 +65,7 @@
           onfocus="this.placeholder=''"
           onblur="this.placeholder='(필수)'"
         />
+        <button id="btn" style="width: 100px; margin: 0px  0px 0px 20px; border-radius: 10%;">중복확인</button>
       </div>
       <div class="info-list">
         <label for="address">address : </label>
