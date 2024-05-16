@@ -44,7 +44,14 @@ public class MemberController {
     }
 
     @GetMapping("")
-    public ResponseEntity<? extends BaseResponseBody> getProfile() {
-        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(0, memberInfoService.memberProfile()));
+    public ResponseEntity<? extends BaseResponseBody> getMyProfile() {
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(0, memberInfoService.myProfile()));
+    }
+
+    @GetMapping("/{member-id}")
+    public ResponseEntity<? extends BaseResponseBody> getMemberProfile(@PathVariable("member-email") String memberEmail) {
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(0, memberInfoService.memberProfile(memberEmail)));
     }
 }
+
+

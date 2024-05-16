@@ -12,11 +12,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class MemberInfoService {
+public class  MemberInfoService {
 
     private final MemberRepository memberRepository;
 
-    public MemberProfileResDto memberProfile() {
+    public MemberProfileResDto myProfile() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Member member = memberRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new Exceptions(ErrorCode.MEMBER_NOT_EXIST));
@@ -25,6 +25,18 @@ public class MemberInfoService {
                 .name(member.getName())
                 .email(member.getEmail())
                 .address(member.getAddress())
+                .gender(member.getGender() == 0?"femail":"mail")
+                .nickname(member.getNickname())
+                .build();
+    }
+
+    public MemberProfileResDto memberProfile(String memeberNickname) {
+        Member member = memberRepository.findByEmail(memeberNickname)
+                .orElseThrow(() -> new Exceptions(ErrorCode.MEMBER_NOT_EXIST));
+
+        return MemberProfileResDto.builder()
+                .name(member.getName())
+                .email(member.getEmail())
                 .gender(member.getGender() == 0?"femail":"mail")
                 .nickname(member.getNickname())
                 .build();
