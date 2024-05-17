@@ -52,21 +52,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 return;
             }
             String accessToken = tokenProvider.extractAccessToken(request).orElse(null);
-            System.out.println("============================");
-            System.out.println(accessToken);
-            System.out.println("============================");
+//            System.out.println("============================");
+//            System.out.println(accessToken);
+//            System.out.println("============================");
             String refreshToken = tokenProvider.extractRefreshToken(request)
 //                    .filter(tokenProvider::isTokenValid)
                     .orElse(null);
-            System.out.println("============================");
-            System.out.println(refreshToken);
-            System.out.println("============================");
-            System.out.println(TokenProvider.isExpired(accessToken));
-//            if (TokenProvider.isExpired(accessToken)) {
-//                System.out.println("1");
-//                checkRefreshTokenAndReIssueAccessToken(response, refreshToken, tokenProvider.getAuthentication(accessToken));
-//                System.out.println("2");
-//            }
+//            System.out.println("============================");
+//            System.out.println(refreshToken);
+//            System.out.println("============================");
+//            System.out.println(TokenProvider.isExpired(accessToken));
 
             if(tokenRepository.findByAccessToken(accessToken).isEmpty()) {
                 sendUnauthorizedResponse(response, "AccessToken is Invalid");
@@ -79,32 +74,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
 
         } catch (ExpiredJwtException e) {
-            // 해당부분 TokenProvide , AuthController 로 옮긴 후, 프론트에서 error 401 interceptor 해서 재발급
-//            Claims claims = e.getClaims();
-//
-//            Member member = memberRepository.findByEmail(claims.getSubject())
-//                    .orElseThrow(() -> new Exceptions(ErrorCode.MEMBER_NOT_EXIST));
-//            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(member.getEmail(),member.getPassword());
-//
-////            String accessToken = tokenProvider.extractAccessToken(request).orElse(null);
-//            String newAccessToken = tokenProvider
-//                    .createAccessToken(tokenProvider.getAuthentication(tokenProvider.extractAccessToken(request).orElse(null)));
-//
-//            String refreshToken = tokenProvider.extractRefreshToken(request)
-//                    .filter(tokenProvider::isTokenValid)
-//                    .orElse(null);
-//            System.out.println(newAccessToken);
-//            System.out.println(refreshToken);
-//
-//            checkRefreshTokenAndReIssueAccessToken(response, refreshToken, newAccessToken);
-//            response.setHeader(accessHeader, newAccessToken);
-////            System.out.println(TokenProvider.isExpired(newAccessToken));
-////            System.out.println(tokenRepository.findById(member.getEmail()).get().getAccessToken().equals(newAccessToken));
-////            String accessToken = tokenProvider.extractAccessToken(request).orElse(null);
-////            System.out.println(tokenProvider.extractSubject(accessToken));
-//            String newRefreshToken = tokenRepository.findByAccessToken(newAccessToken).get().getRefreshToken();
-//            sendUnauthorizedResponse(response, newAccessToken + " " + newRefreshToken);
-//            sendUnauthorizedResponse(response, "Authentication error: " + e.getMessage());
             sendUnauthorizedResponse(response, "401");
         }
         catch (Exception e) {
@@ -117,7 +86,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 
     private boolean isAllowedPath(String requestUri) {
-        List<String> allowedPaths = Arrays.asList("/api/member/login", "/api/member/signup", "/swagger-ui/", "/v3/", "/api/refresh");
+        List<String> allowedPaths = Arrays.asList("/api/member/login", "/api/member/signup", "/api/member/nickname", "/swagger-ui/", "/v3/", "/api/refresh");
         return allowedPaths.stream().anyMatch(path -> requestUri.startsWith(path));
     }
 

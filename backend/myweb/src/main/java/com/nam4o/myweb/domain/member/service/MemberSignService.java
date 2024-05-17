@@ -57,7 +57,7 @@ public class MemberSignService {
     private String accessHeader;
     @Value("${jwt.refresh.header}")
     private String refreshHeader;
-    private final String NICKNAME = "nickname";
+    private final String NICKNAME = "nickname:";
     private final int LIMIT_TIME = 3 * 60;
 
 
@@ -127,14 +127,18 @@ public class MemberSignService {
 
 
     // checkNickname, true -> 중복x / false -> 중복o
-    public Boolean checkNickname(String nickname, String email){
+    public Boolean checkNicknameDuplication(String nickname, String email){
         if(memberRepository.findByNickname(nickname).isPresent()) {
             return false;
         }
-        if(stringRedisTemplate.hasKey(nickname) != null) {
+        if(stringRedisTemplate.hasKey(nickname).equals(true)) {
+            if(stringRedisTemplate.opsForValue().get(NICKNAME + nickname).equals(email)) {
+                return true;
+            }
             return false;
         }
         stringRedisTemplate.opsForValue().set(NICKNAME + nickname, email, Duration.ofSeconds(LIMIT_TIME));
+        saveNicknameInRedis(nickname, email);
         return true;
     }
 

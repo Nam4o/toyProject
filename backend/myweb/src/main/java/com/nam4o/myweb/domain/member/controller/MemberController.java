@@ -25,13 +25,20 @@ public class MemberController {
     private final MemberInfoService memberInfoService;
 
     @PostMapping("/signup")
-    public ResponseEntity<? extends BaseResponseBody> signup(@RequestBody @Valid MemberSignupReqDto request) throws Exception {
+    public ResponseEntity<? extends BaseResponseBody> signup(@RequestBody @Valid MemberSignupReqDto request) {
         Long memberId = memberSignService.memberSignup(request);
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(0, memberId));
     }
 
+    @PostMapping("/nickname")
+    public ResponseEntity<? extends BaseResponseBody> nicknameCheck(@RequestBody @Valid MemberSignupReqDto.nickname request) {
+        log.info(request.getNickname());
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(0,
+                memberSignService.checkNicknameDuplication(request.getNickname(), request.getEmail())));
+    }
+
     @PostMapping("/login")
-    public ResponseEntity<? extends BaseResponseBody> login(@RequestBody @Valid MemberLoginReqDto request) throws Exception {
+    public ResponseEntity<? extends BaseResponseBody> login(@RequestBody @Valid MemberLoginReqDto request) {
         MemberLoginResDto response = memberSignService.memberLogin(request);
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(0, response));
     }

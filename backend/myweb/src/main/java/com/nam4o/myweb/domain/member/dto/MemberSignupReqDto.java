@@ -36,4 +36,16 @@ public class MemberSignupReqDto {
     @NotBlank(message = "주소를 입력해 주세요.")
     @Length(max = 255)
     private String address;
+
+    @Getter @Setter
+    public static class nickname {
+        @Email(message = "올바른 이메일 형식이 아닙니다.")
+        @NotBlank(message = "이메일을 입력해 주세요.")
+        @Length(max = 50)
+        private String email;
+
+        @NotBlank(message = "닉네임을 입력해 주세요.")
+        @Length(min = 3, max = 8)
+        private String nickname;
+    }
 }
