@@ -2,15 +2,15 @@
   <div>
     <h1>hi!</h1>
     <RouterLink :to="{ name: 'signup' }">회원가입</RouterLink>
-    <br>
+    <span> | </span>
     <RouterLink :to="{ name: 'login'}">로그인</RouterLink>
-    <br>
+    <span> | </span>
     <RouterLink :to="{ name: 'main'}">토큰확인</RouterLink>
-    <br>
+    <span> | </span>
     <RouterLink :to="{ name: 'main2'}">토큰확인2</RouterLink>
-    <br>
+    <span> | </span>
     <RouterLink :to="{ name: 'profile'}">프로필</RouterLink>
-    <br>
+    <span> | </span>
     <button @click=logout>로그아웃</button>
     <RouterView />
       

@@ -1,10 +1,15 @@
 <template>
-    <div>
-        <p>{{ name }}</p>
-        <p>{{ email }}</p>
-        <p>{{ nickname }}</p>
-        <p>{{ gender }}</p>
-        <p>{{ address }}</p>
+    <div class="container mt-5">
+        <div class="card p-3">
+            <div class="card-body">
+                <h5 class="card-title">Member Information</h5>
+                <p class="card-text"><strong>Name:</strong> {{ name }}</p>
+                <p class="card-text"><strong>Email:</strong> {{ email }}</p>
+                <p class="card-text"><strong>Nickname:</strong> {{ nickname }}</p>
+                <p class="card-text"><strong>Gender:</strong> {{ gender }}</p>
+                <p class="card-text"><strong>Address:</strong> {{ address }}</p>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -32,9 +37,9 @@ const fetchData = async () => {
         });
 
         // 응답 데이터를 상태 변수에 저장
-        console.log(response.data)
+        console.log(response.data);
         const data = response.data.dataBody;
-        console.log(data)
+        console.log(data);
 
         name.value = data.name;
         email.value = data.email;
@@ -46,6 +51,7 @@ const fetchData = async () => {
     }
 };
 
+
 // 컴포넌트가 마운트될 때 데이터 가져오기
 onMounted(() => {
     fetchData();
@@ -53,5 +59,23 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-/* 스타일 정의 */
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.card-text {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
 </style>

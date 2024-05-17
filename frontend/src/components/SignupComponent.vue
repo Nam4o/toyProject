@@ -1,4 +1,5 @@
 <template>
+  {{ isNicknameValid }}
     <div>
         <form @submit.prevent="signUp" class="signup-form">
       <div class="info-list">
@@ -65,7 +66,7 @@
           onfocus="this.placeholder=''"
           onblur="this.placeholder='(필수)'"
         />
-        <button id="btn" style="width: 100px; margin: 0px  0px 0px 20px; border-radius: 10%;">중복확인</button>
+        <button type="button" id="btn" @click="nicknameCheck" style="width: 100px; margin: 0px  0px 0px 20px; border-radius: 10%;">중복확인</button>
       </div>
       <div class="info-list">
         <label for="address">address : </label>
@@ -107,7 +108,7 @@
         />
       </div>
       <div class="info-list">
-        <input id="btn" class="btn btn-info" type="submit" value="회원 가입" />
+        <input id="btn" class="btn btn-info" type="submit" value="회원 가입" :disabled=isNicknameValid?false:true />
       </div>
 
       </form>
@@ -135,6 +136,7 @@ const gender = ref(null);
 const address = ref(null);
 const phone = ref(null);
 
+let isNicknameValid = ref(false);
 
 const signUp = () => {
     const data = {
@@ -170,6 +172,26 @@ const signUp = () => {
         console.log(error);
         });
 }
+
+const nicknameCheck = () => {
+  const data = {
+    email: email.value,
+    nickname: nickname.value
+  }
+  console.log(data.nickname)
+  console.log(nickname)
+  axios({
+    method: "post",
+    url: "http://127.0.0.1:8080/api/member/nickname",
+    data: data,
+  })
+  .then((response) => {
+    isNicknameValid = response.data.dataBody === true?true : false;
+    isNicknameValid === true?window.alert("사용 가능한 닉네임 입니다.") : window.alert("사용 불가능한 닉네임 입니다.");
+  })
+}
+
+
 </script>
 
 <style lang="scss" scoped>
