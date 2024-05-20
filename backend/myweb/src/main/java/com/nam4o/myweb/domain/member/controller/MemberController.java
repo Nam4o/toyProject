@@ -55,7 +55,7 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(0, memberInfoService.myProfile()));
     }
 
-    @GetMapping("/{member-id}")
+    @GetMapping("/{member-email}")
     public ResponseEntity<? extends BaseResponseBody> getMemberProfile(@PathVariable("member-email") String memberEmail) {
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(0, memberInfoService.memberProfile(memberEmail)));
     }

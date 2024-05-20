@@ -62,6 +62,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 //            System.out.println(refreshToken);
 //            System.out.println("============================");
 //            System.out.println(TokenProvider.isExpired(accessToken));
+            TokenProvider.isExpired(accessToken);
 
             if(tokenRepository.findByAccessToken(accessToken).isEmpty()) {
                 sendUnauthorizedResponse(response, "AccessToken is Invalid");

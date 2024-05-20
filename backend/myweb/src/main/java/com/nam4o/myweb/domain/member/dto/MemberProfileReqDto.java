@@ -6,17 +6,11 @@ import lombok.Setter;
 
 @Getter @Setter
 @Builder
-public class MemberProfileResDto {
-
-    private String name;
-
-    private String email;
-
-    private String nickname;
-
-    private String gender;
+public class MemberProfileReqDto {
 
     private String address;
+
+    private String nickname;
 
     private String profileImage;
 
