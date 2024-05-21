@@ -3,6 +3,7 @@ package com.nam4o.myweb.domain.member.controller;
 import com.nam4o.myweb.common.BaseResponseBody;
 import com.nam4o.myweb.domain.member.dto.MemberLoginReqDto;
 import com.nam4o.myweb.domain.member.dto.MemberLoginResDto;
+import com.nam4o.myweb.domain.member.dto.MemberProfileReqDto;
 import com.nam4o.myweb.domain.member.dto.MemberSignupReqDto;
 import com.nam4o.myweb.domain.member.service.MemberInfoService;
 import com.nam4o.myweb.domain.member.service.MemberSignService;
@@ -58,6 +59,11 @@ public class MemberController {
     @GetMapping("/{member-email}")
     public ResponseEntity<? extends BaseResponseBody> getMemberProfile(@PathVariable("member-email") String memberEmail) {
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(0, memberInfoService.memberProfile(memberEmail)));
+    }
+
+    @PatchMapping("")
+    public ResponseEntity<? extends BaseResponseBody> patchMyProfile(@RequestBody @Valid MemberProfileReqDto request) {
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(0, memberInfoService.updateMemberProfile(request)));
     }
 }
 

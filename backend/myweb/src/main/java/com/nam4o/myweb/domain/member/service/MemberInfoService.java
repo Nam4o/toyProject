@@ -49,25 +49,16 @@ public class  MemberInfoService {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Member member = memberRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new Exceptions(ErrorCode.MEMBER_NOT_EXIST));
-
-        Member updatedMember = Member.builder()
-                .id(member.getId())
-                .name(member.getName())
-                .email(member.getEmail())
-                .address(request.getAddress() == null?member.getAddress():request.getAddress())
-                .gender(member.getGender())
-                .nickname(request.getNickname() == null?member.getNickname():request.getNickname())
-                .profileImage(request.getProfileImage() == null?member.getProfileImage():request.getProfileImage())
-                .build();
-        memberRepository.save(updatedMember);
+        member.update(request);
+        memberRepository.save(member);
 
         return MemberProfileResDto.builder()
-                .name(updatedMember.getName())
-                .email(updatedMember.getEmail())
-                .address(updatedMember.getAddress())
-                .gender(updatedMember.getGender() == 0?"femail":"mail")
-                .nickname(updatedMember.getNickname())
-                .profileImage(updatedMember.getProfileImage())
+                .name(member.getName())
+                .email(member.getEmail())
+                .address(member.getAddress())
+                .gender(member.getGender() == 0?"femail":"mail")
+                .nickname(member.getNickname())
+                .profileImage(member.getProfileImage())
                 .build();
     }
 }

@@ -1,6 +1,7 @@
 package com.nam4o.myweb.domain.member.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.nam4o.myweb.domain.member.dto.MemberProfileReqDto;
 import com.nam4o.myweb.domain.member.repository.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -63,5 +64,17 @@ public class Member {
             this.authorities.add(authority);
         }
 
+    }
+
+    public void update(MemberProfileReqDto request) {
+        if(request.getNickname() != null) {
+            this.nickname = request.getNickname();
+        }
+        if(request.getAddress() != null) {
+            this.address = request.getAddress();
+        }
+        if(request.getProfileImage() != null) {
+            this.profileImage = request.getProfileImage();
+        }
     }
 }
