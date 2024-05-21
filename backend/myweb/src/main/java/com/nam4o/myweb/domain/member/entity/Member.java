@@ -1,6 +1,7 @@
 package com.nam4o.myweb.domain.member.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.nam4o.myweb.domain.article.entity.Article;
 import com.nam4o.myweb.domain.member.dto.MemberProfileReqDto;
 import com.nam4o.myweb.domain.member.repository.Role;
 import jakarta.persistence.*;
@@ -55,6 +56,9 @@ public class Member {
     
     @OneToMany(mappedBy = "member")
     private Set<Authorities> authorities;
+
+    @OneToMany(mappedBy = "member")
+    private List<Article> articles;
 
     public void addRole(Authorities authority){
         if(this.authorities == null) {
