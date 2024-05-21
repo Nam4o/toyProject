@@ -11,7 +11,7 @@
             <div>Loading...</div>
         </template>
     </Suspense>
-    <button class="btn" @click="edit">수정하기</button>
+    <button class="btn btn-primary" @click="edit">수정하기</button>
     </div>
 </template>
 
