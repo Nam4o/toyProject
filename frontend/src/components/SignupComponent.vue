@@ -161,7 +161,7 @@ const signUp = () => {
 
     axios({
         method: "post",
-        url: "http://127.0.0.1:8080/api/member/signup",
+        url: `${store.API_URL}/signup`,
         data: data,
     })
         .then((response) => {
@@ -182,7 +182,7 @@ const nicknameCheck = () => {
   console.log(nickname)
   axios({
     method: "post",
-    url: "http://127.0.0.1:8080/api/member/nickname",
+    url: `${store.API_URL}/nickname`,
     data: data,
   })
   .then((response) => {

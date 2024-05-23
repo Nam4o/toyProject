@@ -7,7 +7,7 @@ import instance from '@/utils/axiosInstance.js';
 export const useSignStore = defineStore(
     "sign",
     () => {
-      const API_URL = "http://127.0.0.1:8080/api";
+      const API_URL = "http://127.0.0.1:8080/api/member";
   
       const router = useRouter();
   
@@ -21,7 +21,7 @@ export const useSignStore = defineStore(
       const saveInfo = () => {
         instance({
           method: "get",
-          url: `${API_URL}/member/signup`,
+          url: `${API_URL}/signup`,
           headers: {
             // Authorization: `Bearer ${token.value}`,
           },
@@ -41,7 +41,7 @@ export const useSignStore = defineStore(
   
         axios({
           method: "post",
-          url: `${API_URL}/member/login`,
+          url: `${API_URL}/login`,
           data: {
             email: email.value,
             password: password.value,
@@ -78,7 +78,7 @@ export const useSignStore = defineStore(
       const logout = () => {
         instance({
           method: "post",
-          url: `${API_URL}/member/logout/`,
+          url: `${API_URL}/logout/`,
           data: {
             // username: username.value,
             // password: password.value,

@@ -16,6 +16,7 @@
 <script setup>
 import instance from '@/utils/axiosInstance';
 import { ref, onMounted } from 'vue';
+import { useSignStore } from '@/stores/signs';
 
 // ref 변수 선언
 const name = ref(null);
@@ -24,12 +25,14 @@ const nickname = ref(null);
 const gender = ref(null);
 const address = ref(null);
 
+const store = useSignStore();
+
 // API 호출
 const fetchData = async () => {
     try {
         const response = await instance({
             method: "get",
-            url: "http://127.0.0.1:8080/api/member",
+            url: store.API_URL,
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("accessToken")}`, // 액세스 토큰
                 RefreshToken: `Bearer ${localStorage.getItem("refreshToken")}` // 리프레시 토큰

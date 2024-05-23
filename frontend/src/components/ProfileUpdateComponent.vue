@@ -26,10 +26,12 @@ import instance from '@/utils/axiosInstance';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import { useSignStore } from '@/stores/signs';
 
 // ref 변수 선언
 
 const router = useRouter();
+const store = useSignStore();
 
 const name = ref(null);
 const email = ref(null);
@@ -46,7 +48,7 @@ const fetchData = async () => {
     try {
         const response = await instance({
             method: "get",
-            url: "http://127.0.0.1:8080/api/member",
+            url: store.API_URL,
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("accessToken")}`, // 액세스 토큰
                 RefreshToken: `Bearer ${localStorage.getItem("refreshToken")}` // 리프레시 토큰
@@ -78,7 +80,7 @@ const nicknameCheck = () => {
   console.log(nickname)
   axios({
     method: "post",
-    url: "http://127.0.0.1:8080/api/member/nickname",
+    url: `${store.API_URL}/nickname`,
     data: data,
   })
   .then((response) => {
@@ -99,7 +101,7 @@ const updateProfile = () => {
     if(oldNickname.value === nickname.value || isNicknameValid === true) {
         instance({
         method: "patch",
-        url: "http://127.0.0.1:8080/api/member",
+        url: store.API_URL,
         data: data
         })
         .then((response) => {
