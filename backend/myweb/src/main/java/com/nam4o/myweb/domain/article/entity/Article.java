@@ -1,5 +1,6 @@
 package com.nam4o.myweb.domain.article.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nam4o.myweb.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -26,6 +27,11 @@ public class Article {
 
     private String updatedAt;
 
+    private String writer;
+
     @ManyToOne
+    @JsonIgnore
     private Member member;
+
+
 }

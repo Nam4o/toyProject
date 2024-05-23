@@ -1,6 +1,7 @@
 package com.nam4o.myweb.domain.article.controller;
 
 import com.nam4o.myweb.common.BaseResponseBody;
+import com.nam4o.myweb.domain.article.dto.ArticleListResDto;
 import com.nam4o.myweb.domain.article.dto.ArticleReqDto;
 import com.nam4o.myweb.domain.article.entity.Article;
 import com.nam4o.myweb.domain.article.service.ArticleService;
@@ -29,8 +30,11 @@ public class ArticleController {
 
     @GetMapping("")
     public ResponseEntity<? extends BaseResponseBody> getArticleList(@RequestParam(value = "page", defaultValue = "0")int page){
-        Page<Article> paging = articleService.getArticles(page);
-        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(0, paging));
+        Page<Article> paging = articleService.getArticles(page - 1);
+        ArticleListResDto response = new ArticleListResDto();
+        response.setPageSize(articleService.getArticlePageSize());
+        response.setArticleList(paging);
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(0, response));
     }
 
 

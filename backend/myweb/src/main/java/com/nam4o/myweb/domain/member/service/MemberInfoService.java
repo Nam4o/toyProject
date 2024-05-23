@@ -6,6 +6,7 @@ import com.nam4o.myweb.domain.member.dto.MemberProfileReqDto;
 import com.nam4o.myweb.domain.member.dto.MemberProfileResDto;
 import com.nam4o.myweb.domain.member.entity.Member;
 import com.nam4o.myweb.domain.member.repository.MemberRepository;
+import com.nam4o.myweb.util.SecurityUtility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,8 +20,11 @@ public class  MemberInfoService {
 
     public MemberProfileResDto myProfile() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Member member = memberRepository.findByEmail(userDetails.getUsername())
+//        Member member = memberRepository.findByEmail(userDetails.getUsername())
+//                .orElseThrow(() -> new Exceptions(ErrorCode.MEMBER_NOT_EXIST));
+        Member member = memberRepository.findByEmail(SecurityUtility.getCurrentUserEmail())
                 .orElseThrow(() -> new Exceptions(ErrorCode.MEMBER_NOT_EXIST));
+
 
         return MemberProfileResDto.builder()
                 .name(member.getName())
@@ -47,7 +51,9 @@ public class  MemberInfoService {
 
     public MemberProfileResDto updateMemberProfile(MemberProfileReqDto request) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Member member = memberRepository.findByEmail(userDetails.getUsername())
+//        Member member = memberRepository.findByEmail(userDetails.getUsername())
+//                .orElseThrow(() -> new Exceptions(ErrorCode.MEMBER_NOT_EXIST));
+        Member member = memberRepository.findByEmail(SecurityUtility.getCurrentUserEmail())
                 .orElseThrow(() -> new Exceptions(ErrorCode.MEMBER_NOT_EXIST));
         member.update(request);
         memberRepository.save(member);
