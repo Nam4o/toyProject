@@ -36,7 +36,7 @@ public class ArticleService {
                 .orElseThrow(() -> new Exceptions(ErrorCode.MEMBER_NOT_EXIST));
 
         Article article = Article.builder()
-                .writer(member.getName())
+                .writter(member.getName())
                 .member(member)
                 .title(request.getTitle())
                 .content(request.getContent())

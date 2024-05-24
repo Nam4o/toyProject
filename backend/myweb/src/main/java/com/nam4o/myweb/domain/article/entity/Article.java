@@ -27,7 +27,7 @@ public class Article {
 
     private String updatedAt;
 
-    private String writer;
+    private String writter;
 
     @ManyToOne
     @JsonIgnore

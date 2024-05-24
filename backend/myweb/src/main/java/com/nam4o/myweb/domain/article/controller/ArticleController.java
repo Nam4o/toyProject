@@ -37,5 +37,11 @@ public class ArticleController {
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(0, response));
     }
 
+    @GetMapping("/{article-id}")
+    public ResponseEntity<? extends BaseResponseBody> getArticleDetail(@PathVariable("article-id") Long articleId) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(0, ""));
+    }
+
 
 }
