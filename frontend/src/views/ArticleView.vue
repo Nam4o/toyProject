@@ -19,7 +19,7 @@
               margin: 0px 0px;
             "
           >
-            {{ article.createdAt.slice(0, 10) }} {{ article.writer }}
+            {{ article.createdAt.slice(0, 10) }} {{ article.writter }}
           </p>
           <hr />
         </div>
