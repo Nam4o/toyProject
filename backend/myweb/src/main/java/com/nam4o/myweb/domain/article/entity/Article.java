@@ -1,12 +1,14 @@
 package com.nam4o.myweb.domain.article.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nam4o.myweb.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
 
 @Entity
 @Getter
@@ -30,7 +32,8 @@ public class Article {
     private String writter;
 
     @ManyToOne
-    @JsonIgnore
+//    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Member member;
 
 
