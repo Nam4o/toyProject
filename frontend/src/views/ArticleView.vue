@@ -56,7 +56,7 @@
       .then((response) => {
         articles.value = response.data.dataBody.articleList.content;
         console.log(articles.value);
-        pageSize.value = response.data.dataBody.pageSize % 10 + 1;
+        pageSize.value = Math.ceil(response.data.dataBody.pageSize / 10);
       })
       .catch((err) => {
         console.log(err);
@@ -71,7 +71,7 @@
       .then((response) => {
         articles.value = response.data.dataBody.articleList.content;
         console.log(articles.value);
-        pageSize.value = response.data.dataBody.pageSize % 10 + 1;
+        pageSize.value = Math.ceil(response.data.dataBody.pageSize / 10);
       })
       .catch((err) => {
         console.log(err);
